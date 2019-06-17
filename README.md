@@ -1,49 +1,69 @@
+[![Build Status](https://scrutinizer-ci.com/g/vmpublishing/psr15-middleware-request-logger/badges/build.png?b=master)](https://scrutinizer-ci.com/g/vmpublishing/psr15-middleware-request-logger/build-status/master)
+[![Code Coverage](https://scrutinizer-ci.com/g/vmpublishing/psr15-middleware-request-logger/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/vmpublishing/psr15-middleware-request-logger/?branch=master)
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/vmpublishing/psr15-middleware-request-logger/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/vmpublishing/psr15-middleware-request-logger/?branch=master)
 
 **WHAT**
 
-PSR-15 html minify middleware with as low dependencies as possible.
+PSR-15 request logging middleware with as low dependencies as possible.
 
-This exists for two reasons:
-- christianklisch/slim-minify did result in errors, as it just uses some regex.
-- slim upgraded to version 4, thus changes its middleware interfaces to the PSR-15 type
+for maintenance reasons we like a slim, configurable logging middleware, that handles all the logging for us.
+- every request
+- every response
+- every error
+- every exception
 
+This will rethrow any errors. error handling should be done on layers further out than this middleware.
 
 **INSTALL**
 
 To install simply use
-`composer require vmpublishing/slim-minify-minify:>=2.0.0`
+`composer require vmpublishing/psr15-middleware-request-logger:*@stable`
 
 **USE**
 
-As this is basically just a wrapper for voku/html-min ( https://github.com/voku/HtmlMin ), configure that to you liking and pass the instance in, ie:
+This is a fancy wrapper for psr/log. So you will need to setup your own logger in any way you wish.
+After that, you can just simply create the middleware and use it
 
 ```
-$htmlMin = new HtmlMin();
+use VM\RequestLogger\Services\StandardLogFormatter;
+use VM\RequestLogger\Middlewares\RequestLogger;
 
-$htmlMin->doOptimizeViaHtmlDomParser();               // optimize html via "HtmlDomParser()"
-$htmlMin->doRemoveComments();                         // remove default HTML comments (depends on "doOptimizeViaHtmlDomParser(true)")
-$htmlMin->doSumUpWhitespace();                        // sum-up extra whitespace from the Dom (depends on "doOptimizeViaHtmlDomParser(true)")
-$htmlMin->doRemoveWhitespaceAroundTags();             // remove whitespace around tags (depends on "doOptimizeViaHtmlDomParser(true)")
-$htmlMin->doOptimizeAttributes();                     // optimize html attributes (depends on "doOptimizeViaHtmlDomParser(true)")
-$htmlMin->doRemoveHttpPrefixFromAttributes();         // remove optional "http:"-prefix from attributes (depends on "doOptimizeAttributes(true)")
-$htmlMin->doRemoveDefaultAttributes();                // remove defaults (depends on "doOptimizeAttributes(true)" | disabled by default)
-$htmlMin->doRemoveDeprecatedAnchorName();             // remove deprecated anchor-jump (depends on "doOptimizeAttributes(true)")
-$htmlMin->doRemoveDeprecatedScriptCharsetAttribute(); // remove deprecated charset-attribute - the browser will use the charset from the HTTP-Header, anyway (depends on "doOptimizeAttributes(true)")
-$htmlMin->doRemoveDeprecatedTypeFromScriptTag();      // remove deprecated script-mime-types (depends on "doOptimizeAttributes(true)")
-$htmlMin->doRemoveDeprecatedTypeFromStylesheetLink(); // remove "type=text/css" for css links (depends on "doOptimizeAttributes(true)")
-$htmlMin->doRemoveEmptyAttributes();                  // remove some empty attributes (depends on "doOptimizeAttributes(true)")
-$htmlMin->doRemoveValueFromEmptyInput();              // remove 'value=""' from empty <input> (depends on "doOptimizeAttributes(true)")
-$htmlMin->doSortCssClassNames();                      // sort css-class-names, for better gzip results (depends on "doOptimizeAttributes(true)")
-$htmlMin->doSortHtmlAttributes();                     // sort html-attributes, for better gzip results (depends on "doOptimizeAttributes(true)")
-$htmlMin->doRemoveSpacesBetweenTags();                // remove more (aggressive) spaces in the dom (disabled by default)
+// given a logger in $logger, build the StandardLogFormatter (or write your own log formatter, using the interface)
+$formatter = new StandardLogFormatter($logger);
+$middleware = new RequestLogger($formatter);
 
-$middleware = new \VM\SlimHtmlMinify\Middlewares\HtmlMinify($htmlMin, true);
-
-# and for slim
+// and for slim, given $app
 $app->add($middleware);
 
-# or the lazy version depending on a container
-$app->add(HtmlMinify::class);
-
-# or just add it to specific routes / groups
+// or just add it on the routes you want it on
 ```
+
+The default setting is notice, and it won't log anything below that, whatever you set as log level in your logger.
+This is for optimization reasons. The formatter won't build any string or do any array magic, before the log level is sufficient.
+
+If you want to log with a different level than the default, just pass that in:
+
+```
+use VM\RequestLogger\Services\LogLevel;
+use VM\RequestLogger\Services\StandardLogFormatter;
+
+$logLevel = new LogLevel(LogLevel::LEVEL_ERROR);
+$formatter = new StandardLogFormatter($logger, $logLevel);
+// ...
+```
+
+The StandardLogFormatter can be configured as for which log level to send at which message.
+just pass in an array to override the defaults. ie:
+
+```
+use VM\RequestLogger\Services\StandardLogFormatter;
+use VM\RequestLogger\Services\LogLevel
+
+$logLevel = new LogLevel(LogLevel::LEVEL_ERROR);
+$logLevelRequestUri = new LogLevel(LogLevel::LEVEL_DEBUG);
+$logLevelMappings = [StandardLogFormatter::MESSAGE_REQUEST_URI => $logLevelRequestUri];
+$formatter = new StandardLogFormatter($logger, $logLevel, $logLevelMappings);
+```
+
+report any issues/feature requests on github.
+enjoy!
