@@ -5,7 +5,6 @@
     "require": {
         "php": ">=7.2",
         "psr/http-server-middleware": "*@stable",
-        "psr/container": "*@stable",
         "psr/log": "*@stable"
     },
     "require-dev": {
