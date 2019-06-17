@@ -1,0 +1,32 @@
+{
+    "name": "vmpublishing/psr15-middleware-request-logger",
+    "description": "middleware to log every incoming request and response with varying levels of detail. also log all exceptions (and rethrow them)",
+    "type": "library",
+    "require": {
+        "php": ">=7.2",
+        "psr/http-server-middleware": "*@stable",
+        "psr/container": "*@stable",
+        "psr/log": "*@stable"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "*@stable",
+        "vmpublishing/psr15-middleware-test-helpers": "*@stable"
+    },
+    "autoload": {
+        "psr-4": {
+            "VM\\RequestLogger\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "VM\\RequestLogger\\Tests\\": "tests/"
+        }
+    },
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Dirk Gustke",
+            "email": "dirk.gustke@verticalmedia.com"
+        }
+    ]
+}
