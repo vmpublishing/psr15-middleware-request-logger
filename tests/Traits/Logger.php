@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 namespace VM\RequestLogger\Tests\Traits;
+
 use Psr\Log\LoggerInterface;
 
 trait Logger

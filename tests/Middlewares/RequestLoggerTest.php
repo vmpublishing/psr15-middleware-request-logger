@@ -5,13 +5,11 @@ declare(strict_types=1);
 namespace VM\RequestLogger\Tests\Middlewares;
 
 use PHPUnit\Framework\TestCase;
+use RuntimeException;
+use TypeError;
 use VM\Psr15Mocks\Middleware;
 use VM\RequestLogger\Interfaces\LogMessageFormatter;
 use VM\RequestLogger\Middlewares\RequestLogger;
-use TypeError;
-use RuntimeException;
-use Error;
-use Exception;
 
 class RequestLoggerTest extends TestCase
 {
@@ -58,7 +56,7 @@ class RequestLoggerTest extends TestCase
         $hasException = false;
         try {
             $middleware->process($this->request, $this->requestHandler);
-        } catch(TypeError $e) {
+        } catch (TypeError $e) {
             $hasException = true;
         }
         $this->assertTrue($hasException, "Exception was not rethrown");
@@ -77,7 +75,7 @@ class RequestLoggerTest extends TestCase
         $hasException = false;
         try {
             $middleware->process($this->request, $this->requestHandler);
-        } catch(RuntimeException $e) {
+        } catch (RuntimeException $e) {
             $hasException = true;
         }
         $this->assertTrue($hasException, "Exception was not rethrown");

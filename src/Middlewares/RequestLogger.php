@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace VM\RequestLogger\Middlewares;
 
-use Psr\Http\Server\MiddlewareInterface;
-use Psr\Http\Message\ServerRequestInterface as Request;
-use Psr\Http\Message\ResponseInterface as Response;
-use Psr\Http\Server\RequestHandlerInterface as RequestHandler;
-use VM\RequestLogger\Interfaces\LogMessageFormatter;
 use Error;
 use Exception;
+use Psr\Http\Message\ResponseInterface as Response;
+use Psr\Http\Message\ServerRequestInterface as Request;
+use Psr\Http\Server\MiddlewareInterface;
+use Psr\Http\Server\RequestHandlerInterface as RequestHandler;
+use VM\RequestLogger\Interfaces\LogMessageFormatter;
 
 class RequestLogger implements MiddlewareInterface
 {

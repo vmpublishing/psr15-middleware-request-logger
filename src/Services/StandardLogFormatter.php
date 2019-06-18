@@ -4,17 +4,15 @@ declare(strict_types=1);
 
 namespace VM\RequestLogger\Services;
 
-use VM\RequestLogger\Interfaces\LogMessageFormatter;
-use VM\RequestLogger\Services\LogLevel;
-use Psr\Log\LoggerInterface;
-use Psr\Http\Message\ServerRequestInterface as Request;
-use Psr\Http\Message\UriInterface as Uri;
-use Psr\Http\Message\ResponseInterface as Response;
 use Error;
 use Exception;
-use Throwable;
+use Psr\Http\Message\ResponseInterface as Response;
+use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\StreamInterface as Body;
-
+use Psr\Http\Message\UriInterface as Uri;
+use Psr\Log\LoggerInterface;
+use Throwable;
+use VM\RequestLogger\Interfaces\LogMessageFormatter;
 
 class StandardLogFormatter implements LogMessageFormatter
 {
@@ -35,12 +33,11 @@ class StandardLogFormatter implements LogMessageFormatter
 
     public function __construct(
         LoggerInterface $logger,
-        LogLevel $logLevel = LogLevel::LEVEL_NOTICE,
+        ?LogLevel $logLevel = null,
         $logLevelMappings = []
-    )
-    {
+    ) {
         $this->logger = $logger;
-        $this->logLevel = $logLevel;
+        $this->logLevel = $logLevel ?? new LogLevel(LogLevel::LEVEL_NOTICE);
 
         $defaultLogLevelMappings = [
             self::MESSAGE_ERROR => new LogLevel(LogLevel::LEVEL_CRITICAL),

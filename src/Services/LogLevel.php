@@ -42,5 +42,4 @@ class LogLevel
     {
         return $this->mappings[$this->level];
     }
-
 }

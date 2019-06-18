@@ -5,13 +5,12 @@ declare(strict_types=1);
 namespace VM\RequestLogger\Tests\Services;
 
 use PHPUnit\Framework\TestCase;
+use RuntimeException;
+use TypeError;
+use VM\Psr15Mocks\Middleware;
+use VM\RequestLogger\Services\LogLevel;
 use VM\RequestLogger\Services\StandardLogFormatter;
 use VM\RequestLogger\Tests\Traits\Logger;
-use VM\RequestLogger\Tests\Services\StandardLogFormatterTest;
-use VM\RequestLogger\Services\LogLevel;
-use TypeError;
-use RuntimeException;
-use VM\Psr15Mocks\Middleware;
 
 class StandardLogFormatterTest extends TestCase
 {
@@ -112,5 +111,11 @@ class StandardLogFormatterTest extends TestCase
         $logLevel = new LogLevel(LogLevel::LEVEL_DEBUG);
         $service = new StandardLogFormatter($this->logger, $logLevel);
         $service->logResponse($this->response);
+    }
+
+    public function testMayInstantiateWithoutSecondParam(): void
+    {
+        $service = new StandardLogFormatter($this->logger);
+        $this->assertSame(StandardLogFormatter::class, get_class($service));
     }
 }
